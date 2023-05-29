@@ -11,6 +11,7 @@ import com.bin.david.form.core.SmartTable;
 import com.bin.david.form.core.TableConfig;
 import com.bin.david.form.data.CellInfo;
 import com.bin.david.form.data.column.ArrayColumn;
+import com.bin.david.form.data.column.Column;
 import com.bin.david.form.data.format.bg.BaseBackgroundFormat;
 import com.bin.david.form.data.format.bg.BaseCellBackgroundFormat;
 import com.bin.david.form.data.format.bg.ICellBackgroundFormat;
@@ -41,16 +42,14 @@ public class MainActivity extends AppCompatActivity {
     List<UserInfo> list2 = new ArrayList<>();
 
     SmartRefreshLayout refreshLayout;
-    final ArrayColumn<String> rankColumn = new ArrayColumn<>("Thứ \nhạng", "rank");
-    final ArrayColumn<String> nameColumn = new ArrayColumn<>("Họ tên", "name");
-    final ArrayColumn<String> ageColumn = new ArrayColumn<>("age", "age");
-    final ArrayColumn<String> addressColumn = new ArrayColumn<>("address", "address");
-    final ArrayColumn<String> phoneColumn = new ArrayColumn<>("phone", "phone");
-    final ArrayColumn<String> emailColumn = new ArrayColumn<>("email", "email");
-    final ArrayColumn<String> passwordColumn = new ArrayColumn<>("password", "password");
-    final ArrayColumn<String> heightColumn = new ArrayColumn<>("height", "height");
-    int page = 1;
-    int rank = 1;
+    final Column<String> rankColumn = new Column<>("Thứ \nhạng", "rank");
+    final Column<String> nameColumn = new Column<>("Họ tên", "name");
+    final Column<String> ageColumn = new Column<>("age", "age");
+    final Column<String> addressColumn = new Column<>("address", "address");
+    final Column<String> phoneColumn = new Column<>("phone", "phone");
+    final Column<String> emailColumn = new Column<>("email", "email");
+    final Column<String> passwordColumn = new Column<>("password", "password");
+    final Column<String> heightColumn = new Column<>("height", "height");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +60,22 @@ public class MainActivity extends AppCompatActivity {
         initTable();
     }
 
+    private void getDataApi() {
+        list2 = new ArrayList<>();
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+        list2.add(new UserInfo("Đang cập nhật","sadsađâs","22","dffdsf","fdsfs","fdsfdsfss","fdsfssf","fssfdsfsdf"));
+    }
+
     private void initTable() {
         tableData = new PageTableData<UserInfo>("userfInfo", list2, rankColumn, nameColumn, ageColumn, addressColumn, phoneColumn, emailColumn, passwordColumn, heightColumn);
         smartTable.setTableData(tableData);
@@ -68,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
         smartTable.getConfig().setShowXSequence(false);
         smartTable.getConfig().setShowYSequence(false);
         smartTable.getConfig().setFixedTitle(true);
-//        rankColumn.setFixed(true);
-//        nameColumn.setFixed(true);
+        rankColumn.setFixed(true);
+        nameColumn.setFixed(true);
         ICellBackgroundFormat<CellInfo> backgroundFormat = new BaseCellBackgroundFormat<CellInfo>() {
             @Override
             public int getBackGroundColor(CellInfo cellInfo) {
@@ -89,81 +104,81 @@ public class MainActivity extends AppCompatActivity {
         smartTable.getConfig().setColumnTitleVerticalPadding(24);
         refreshLayout.setEnableRefresh(false);//是否启用下拉刷新功能
 
-        refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-
-                if (page == 5) {
-                    refreshLayout.setEnableLoadMore(false);
-                }
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("https://api.themoviedb.org/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                GitHubService service = retrofit.create(GitHubService.class);
-                service.getMovies("ffdb03735928fcc0efda02a0db29b49e", page).enqueue(new Callback<Movie>() {
-                    @Override
-                    public void onResponse(Call<Movie> call, Response<Movie> response) {
-                        Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
-                        int size = response.body().getResults().size();
-                        for (int i = 0; i < size; i++) {
-//                            list2.add(new UserInfo(i+"", "sddfddfsdf", response.body().getResults().get(i).getOriginalLanguage(),
-//                                    String.valueOf(response.body().getResults().get(i).isVideo()), response.body().getResults().get(i).getTitle(), response.body().getResults().get(i).getPosterPath(), response.body().getResults().get(i).getBackdropPath(), response.body().getResults().get(i).getReleaseDate()));
-                            list2.add(new UserInfo(response.body().getResults().get(i).getId() + "",
-                                    rank + "", "Z2", "Z3", "ZZ"
-                                    , "GFD", "FGDFS", "ÁDA"));
-                            rank++;
-                        }
-                        smartTable.setData(list2);
-                        page++;
-                        refreshLayout.finishLoadMore();
-                    }
-
-                    @Override
-                    public void onFailure(Call<Movie> call, Throwable t) {
-                        Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-
-            }
-        });
+//        refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+//            @Override
+//            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+//
+//                if (page == 5) {
+//                    refreshLayout.setEnableLoadMore(false);
+//                }
+//                Retrofit retrofit = new Retrofit.Builder()
+//                        .baseUrl("https://api.themoviedb.org/")
+//                        .addConverterFactory(GsonConverterFactory.create())
+//                        .build();
+//
+//                GitHubService service = retrofit.create(GitHubService.class);
+//                service.getMovies("ffdb03735928fcc0efda02a0db29b49e", page).enqueue(new Callback<Movie>() {
+//                    @Override
+//                    public void onResponse(Call<Movie> call, Response<Movie> response) {
+//                        Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
+//                        int size = response.body().getResults().size();
+//                        for (int i = 0; i < size; i++) {
+////                            list2.add(new UserInfo(i+"", "sddfddfsdf", response.body().getResults().get(i).getOriginalLanguage(),
+////                                    String.valueOf(response.body().getResults().get(i).isVideo()), response.body().getResults().get(i).getTitle(), response.body().getResults().get(i).getPosterPath(), response.body().getResults().get(i).getBackdropPath(), response.body().getResults().get(i).getReleaseDate()));
+//                            list2.add(new UserInfo(response.body().getResults().get(i).getId() + "",
+//                                    rank + "", "Z2", "Z3", "ZZ"
+//                                    , "GFD", "FGDFS", "ÁDA"));
+//                            rank++;
+//                        }
+//                        smartTable.setData(list2);
+//                        page++;
+//                        refreshLayout.finishLoadMore();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<Movie> call, Throwable t) {
+//                        Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//
+//
+//            }
+//        });
     }
 
-    private void getDataApi() {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.themoviedb.org/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        GitHubService service = retrofit.create(GitHubService.class);
-        service.getMovies("ffdb03735928fcc0efda02a0db29b49e", page).enqueue(new Callback<Movie>() {
-            @Override
-            public void onResponse(Call<Movie> call, Response<Movie> response) {
-                Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
-                int size = response.body().getResults().size();
-                for (int i = 0; i < size; i++) {
-//                    list2.add(new UserInfo(i + "", "gfgfdgdfgdf", response.body().getResults().get(i).getOriginalLanguage(),
-//                            String.valueOf(response.body().getResults().get(i).isVideo()), response.body().getResults().get(i).getTitle(),
-//                            response.body().getResults().get(i).getPosterPath(),
-//                            response.body().getResults().get(i).getBackdropPath(),
-//                            response.body().getResults().get(i).getReleaseDate()));
-                    list2.add(new UserInfo(response.body().getResults().get(i).getId() + "",
-                            rank + "", "Z2", "Z3", "ZZ"
-                            , "GFD", "FGDFS", "ÁDA"));
-                    rank++;
-                }
-                smartTable.setData(list2);
-                page++;
-            }
-
-            @Override
-            public void onFailure(Call<Movie> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    private void getDataApi() {
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("https://api.themoviedb.org/")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//
+//        GitHubService service = retrofit.create(GitHubService.class);
+//        service.getMovies("ffdb03735928fcc0efda02a0db29b49e", page).enqueue(new Callback<Movie>() {
+//            @Override
+//            public void onResponse(Call<Movie> call, Response<Movie> response) {
+//                Toast.makeText(MainActivity.this, "success", Toast.LENGTH_SHORT).show();
+//                int size = response.body().getResults().size();
+//                for (int i = 0; i < size; i++) {
+////                    list2.add(new UserInfo(i + "", "gfgfdgdfgdf", response.body().getResults().get(i).getOriginalLanguage(),
+////                            String.valueOf(response.body().getResults().get(i).isVideo()), response.body().getResults().get(i).getTitle(),
+////                            response.body().getResults().get(i).getPosterPath(),
+////                            response.body().getResults().get(i).getBackdropPath(),
+////                            response.body().getResults().get(i).getReleaseDate()));
+//                    list2.add(new UserInfo(response.body().getResults().get(i).getId() + "",
+//                            rank + "", "Z2", "Z3", "ZZ"
+//                            , "GFD", "FGDFS", "ÁDA"));
+//                    rank++;
+//                }
+//                smartTable.setData(list2);
+//                page++;
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Movie> call, Throwable t) {
+//                Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
     private void initView() {
         smartTable = findViewById(R.id.table);
